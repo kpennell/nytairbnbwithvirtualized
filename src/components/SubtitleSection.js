@@ -15,11 +15,11 @@ const styles = theme => ({
   
   root: {
     width: "100%",
-    padding: "0 85px",
+ 
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-start",
-    marginTop:140
+    
   },
   subtitle: {
     marginTop:"24px"

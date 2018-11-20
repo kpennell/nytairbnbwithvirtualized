@@ -11,6 +11,8 @@ import Grid from "@material-ui/core/Grid";
 import Explore from "@material-ui/icons/Explore";
 import Button from "@material-ui/core/Button";
 
+import DropDownMenu from "./DropDownMenu.js";
+
 const styles = theme => ({
   header: {
     height: "80px",
@@ -24,13 +26,21 @@ const styles = theme => ({
     color: "#f44336"
   },
   toolbar: {
-    height: "80px"
-    // display: "flex",
-    // justifyContent: "space-between"
+    height: "80px",
+    [theme.breakpoints.up("sm")]: {
+        display: "flex",
+        justifyContent: "space-between"
+    },
+    display: "flex",
+    alignItems: "center",
+    justifyContent:"space-between"
+
+
   },
   grid: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
+    justifyContent:"space-between"
   },
   root: {
     width: "100%"
@@ -98,6 +108,24 @@ const styles = theme => ({
   },
   menubuttons: {
     fontWeight: 600
+  },
+  menuItems:{
+
+     [theme.breakpoints.down('sm')]: {
+      display:"none"
+    },
+  },
+  dropdownMenu:{
+    [theme.breakpoints.up('md')]: {
+      display:"none"
+    },
+
+  },
+  headerGrid:{
+    [theme.breakpoints.down('sm')]: {
+      width:"90%"
+    },
+
   }
 });
 
@@ -109,9 +137,13 @@ class Header extends React.Component {
       <div className={classes.root}>
         <AppBar position="fixed" className={classes.header}>
           <Toolbar className={classes.toolbar}>
-            <Grid justify="space-between" container spacing={24}>
+            <Grid justify="space-between" className={classes.headerGrid} container spacing={8}>
               <Grid item className={classes.grid}>
                 <Explore className={classes.mainIcon} />
+                <div className={classes.dropdownMenu}>
+                <DropDownMenu />
+
+                </div>
 
                 <div className={classes.search}>
                   <div className={classes.searchIcon}>
@@ -128,7 +160,7 @@ class Header extends React.Component {
               </Grid>
 
 
-              <Grid item className={classes.grid}>
+              <Grid item className={classes.menuItems}>
                 <div>
                   <Button className={classes.menubuttons} color="inherit">
                     Help

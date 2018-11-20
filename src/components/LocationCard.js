@@ -14,11 +14,16 @@ import Typography from '@material-ui/core/Typography';
 
 import Launch from "@material-ui/icons/Launch";
 
+import CardCarousel from "./CardCarousel.js";
+
 const styles = theme => ({
 
   card: {
     width: 340,
-    boxShadow: "none"
+
+    boxShadow: "none",
+    margin:"0px 5px"
+
   },
   media: {
     height:220,
@@ -27,7 +32,10 @@ const styles = theme => ({
   },
 
   cardContentArea:{
-    padding:"4px 0px"
+    padding:"4px 0px",
+    "&:last-child": {
+      paddingBottom:0
+    }
   },
   year:{
     backgroundColor:"#A61D55",
@@ -51,24 +59,31 @@ const styles = theme => ({
   articleLink:{
     textDecoration:"none",
     color:"#A61D55",
-  }
+  },
+  CarouselDiv:{
+    height:190,
+    objectFit: 'cover',
+    borderRadius: 5,
+
+
+  },
 });
+
+
 
 class LocationCard extends React.Component {
   render() {
     const { classes, location } = this.props;
 
     return (
-      <Card className={classes.card}>
-      <CardActionArea>
-        <CardMedia
-          component="img"
-          
-          className={classes.media}
-         
-          image={location.image1}
-         
-        />
+      <Card className={classes.card} onMouseEnter={e => this.props.setCardMarkerHover(location)} onMouseLeave={e => this.props.resetCardMarkerHover()} >
+
+
+
+        <div className={classes.CarouselDiv}>
+        <CardCarousel location={location} />
+        </div>
+
 
         <CardContent className={classes.cardContentArea}>
           <Typography noWrap className={classes.yearArea} component="p">
@@ -87,7 +102,7 @@ class LocationCard extends React.Component {
           </Typography>
           </div>
         </CardContent>
-      </CardActionArea>
+   
       
     </Card>
     )      

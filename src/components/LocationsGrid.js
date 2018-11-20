@@ -5,96 +5,163 @@ import Toolbar from "@material-ui/core/Toolbar";
 import { withStyles } from "@material-ui/core/styles";
 import LocationCard from "./LocationCard.js";
 import Grid from "@material-ui/core/Grid";
+import SubtitleSection from "../components/SubtitleSection.js";
 
-import { List, AutoSizer } from "react-virtualized";
-
-const CARD_WIDTH = 340;
+import MapAndMarkers from "../components/MapAndMarkers.js";
+import PaginationComponent from "./PaginationComponent.js";
+import FlightTakeoff from "@material-ui/icons/FlightTakeoff";
+import Typography from "@material-ui/core/Typography";
 
 const styles = theme => ({
   root: {
-    padding: "20px 85px",
-    marginTop: 20,
+    justifyContent: "flex-start",
+    height: "100%",
+    width: "100%",
+    display: "block"
+  },
+  mapDiv: {
+    height: "85vh",
+    width: "65%",
+    display: "inline-block",
+    position: "sticky",
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
+    [theme.breakpoints.down("sm")]: {
+      display: "none"
+    }
+  },
+  listGridDiv: {
+    overflow: "auto",
+    height: "85vh"
+  },
+  parentDiv: {
+    display: "flex",
+    justifyContent: "space-between",
+    height: "100%",
+    overflow: "hidden"
+  },
+  subTitleDiv: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
     justifyContent: "flex-start"
   },
-  Row: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    padding: "0 0.5rem",
-    boxSizing: "border-box",
-    marginBottom: "20px"
+  subtitle: {
+    marginTop: "35px"
   },
-  Item: {
-    width: "340px",
-    height: "305px",
-    display: "inline-flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    margin: "15px 10px",
-
-   
+  planeIcon: {
+    color: "#F44436",
+    marginTop: 15,
+    marginRight: 15,
+    fontSize: 35
   },
-  // parentList:{
-  //   marginTop:"10px"
-  // }
+  paginationSection:{
+    height:"100px",
+    margin:100
+  }
 });
 
 class LocationsGrid extends React.Component {
+  state = {
+    currentPage: 1,
+    hoveredCardId: ""
+  };
+
+  handlePageChange = page => {
+    this.setState({
+      currentPage: page
+    });
+  };
+
+  setCardMarkerHover = location => {
+    //console.log(location)
+    this.setState({
+      hoveredCardId: location.pageid
+    });
+  };
+
+  resetCardMarkerHover = () => {
+    this.setState({
+      hoveredCardId: ""
+    });
+  };
+
   render() {
     const { locations, classes } = this.props;
+    const { currentPage } = this.state;
+
+    const resultsPerPage = 30;
+    const pageCount = Math.ceil(locations.length / resultsPerPage);
+
+    const total = Math.ceil(locations.length);
+
+    const offset = (currentPage - 1) * resultsPerPage;
+
+    const locationsSlicedDownOnPage = locations.slice(
+      offset,
+      offset + resultsPerPage
+    );
+
+    // page 1 : 0 - 20
+    // page 2 : 20 - 40
 
     return (
+      <div className={classes.root}>
+   
 
+        <div className={classes.parentDiv}>
+          <Grid
+            container
+            className={classes.listGridDiv}
+            justify="flex-start"
+            spacing={0}
+          >
+            <div className={classes.subTitleDiv}>
+              <FlightTakeoff color="secondary" className={classes.planeIcon} />
+              <Typography
+                variant="subtitle1"
+                className={classes.subtitle}
+                gutterBottom
+              >
+                Explore and Filter the New York Times recommended travel
+                destinations since 2011.
+              </Typography>
+            </div>
 
-        <div style={{ marginTop:"10px", height: "80vh" }}>
-       <AutoSizer>
-          {({ height, width }) => {
-            const itemsPerRow = Math.floor(width / CARD_WIDTH) || 1;
-            const rowCount = Math.ceil(locations.length / itemsPerRow);
-
-
-            return (
-              <div>
-              
-                <List
-                  width={width}
-                  height={height}
-
-                  rowCount={rowCount}
-                  rowHeight={CARD_WIDTH}
-                  rowRenderer={({ index, key, style }) => {
-                    const items = [];
-
-                    const fromIndex = index * itemsPerRow;
-
-                    const toIndex = Math.min(
-                      fromIndex + itemsPerRow,
-                      locations.length
-                    );
-
-                    for (let i = fromIndex; i < toIndex; i++) {
-                      let location = locations[i];
-                      items.push(
-                        <div className={classes.Item} key={i}>
-                          <LocationCard location={location} />
-                        </div>
-                      );
-                    }
-
-                    return (
-                      <div className={classes.Row} key={key} style={style}>
-                        {items}
-                      </div>
-                    );
-                  }}
+            {locationsSlicedDownOnPage.map((location, index) => (
+              <Grid key={index} item>
+                <LocationCard
+                  setCardMarkerHover={this.setCardMarkerHover}
+                  resetCardMarkerHover={this.resetCardMarkerHover}
+                  location={location}
                 />
-              </div>
-            );
-          }}
-        </AutoSizer>
+              </Grid>
+            ))}
+                  <div className={classes.paginationSection}>
+        <PaginationComponent
+          total={total}
+          resultsPerPage={resultsPerPage}
+          pageCount={pageCount}
+          currentPage={currentPage}
+          handlePageChange={this.handlePageChange}
+        />
         </div>
+          </Grid>
+
+
+
+          {this.props.mapShowing && (
+            <div className={classes.mapDiv}>
+              <MapAndMarkers
+                locations={locationsSlicedDownOnPage}
+                hoveredCardId={this.state.hoveredCardId}
+              />
+            </div>
+          )}
+        </div>
+      </div>
     );
   }
 }
